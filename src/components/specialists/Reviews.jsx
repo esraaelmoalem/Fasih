@@ -1,0 +1,5 @@
+import {useState} from 'react';import {useSearchParams} from 'react-router-dom';import {BadgeCheck} from 'lucide-react';
+import {useAsync} from '../../hooks.js';import {specialists,appointments,children,reviews} from '../../services/index.js';import {GOVS,SPECIALISTS} from '../../data/mock.js';
+export default function Reviews({s}){const [l,re]=useAsync(()=>reviews.list(s.id),[s.id]);const [rt,setRt]=useState(5);const [tx,setTx]=useState('');
+return <div><h4>التقييمات</h4>{l?.length===0&&<p>لا توجد تقييمات بعد.</p>}{l?.map(x=><div key={x.id} className="card" style={{margin:'6px 0'}}>★{x.rating} · {x.text} <button className="btn o" disabled={x.reported} onClick={async()=>{await reviews.report(x.id);re()}}>{x.reported?'تم الإبلاغ':'إبلاغ'}</button></div>)}
+<select value={rt} onChange={e=>setRt(+e.target.value)}>{[5,4,3,2,1].map(n=><option key={n}>{n}</option>)}</select><input value={tx} onChange={e=>setTx(e.target.value)} placeholder="اكتب تقييمك"/><button className="btn" disabled={!tx.trim()} onClick={async()=>{await reviews.add({specId:s.id,rating:rt,text:tx.trim()});setTx('');re()}}>إرسال التقييم</button></div>}
